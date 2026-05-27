@@ -50,8 +50,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
 // Register routes
 app.use('/api/health', healthCheckRoutes) // health Check route
 app.use('/api/auth', authRoutes);
