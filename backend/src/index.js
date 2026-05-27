@@ -68,9 +68,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// GLOBAL ERROR HANDLER
-// BUG: Improper error handling. It returns the raw error stack trace to the client,
-// which leaks details about database types, schema layout, and file paths.
 app.use((err, req, res, next) => {
   console.error('[CRITICAL-ERROR]:', err);
   res.status(500).json({
@@ -87,16 +84,13 @@ const server = app.listen(PORT, () => {
   console.log(`===================================================`);
 });
 
-// Catch unhandled rejections
 process.on('unhandledRejection', (reason) => {
   console.error('[UNHANDLED REJECTION]:', reason);
   server.close(() => {
     process.exit(1);
   })
-  // Intentionally do not exit process so candidates see unhandled promise logs
 });
 
-// Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
   console.error('[UNCAUGHT EXCEPTION]:', err);
 

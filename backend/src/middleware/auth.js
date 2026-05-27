@@ -1,27 +1,44 @@
 const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'my-super-secret-secret-key-12345!!!';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is missing');
+}
 
 // Authentication middleware
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Access denied. No token provided.' });
+    return res.status(401).json({
+      success: false,
+      message: 'Access denied. No token provided.'
+    });
   }
 
-  const token = authHeader.split(' ')[1];
+  const parts = authHeader.split(' ');
 
+  if (parts.length !== 2) {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid authorization header format',
+    });
+  }
+
+  const token = parts[1];
   try {
-    // SECURITY BUG: The verification is weak. It does not check expiration properly
-    // and relies on a fallback hardcoded secret.
-    const decoded = jwt.verify(token, JWT_SECRET, { ignoreExpiration: true }); 
-    
+    const decoded = jwt.verify(token, JWT_SECRET);
     // Add user details to request object
     req.user = decoded;
     next();
   } catch (error) {
-    // IMPROPER ERROR HANDLING: Leaks full error details including secret key mismatches to the client
-    return res.status(401).json({ error: 'Invalid token.', details: error.message });
+    console.error("[Authentication_Error]: ", error.message)
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid or expired token.',
+    });
   }
 };
 
@@ -31,32 +48,61 @@ const authorize = (roles = []) => {
     roles = [roles];
   }
 
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized. User context missing.' });
-    }
+  return async (req, res, next) => {
+    try {
+      if (!req.user?.id) {
+        return res.status(401).json({
+          success: false,
+          message: 'Unauthorized. User context missing.',
+        });
+      }
+      const currentUser = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: { id: true, role: true }
+      });
+      if (!currentUser) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found.',
+        });
+      }
 
-    // Role-based verification
-    if (roles.length && !roles.includes(req.user.role)) {
-      return res.status(403).json({ error: `Forbidden. Requires role: ${roles.join(' or ')}` });
-    }
+      // Role-based verification
+      if (roles.length && !roles.includes(currentUser.role)) {
+        return res.status(403).json({
+          success: false,
+          message: `Forbidden. Requires role: ${roles.join(' or ')}`,
+        });
+      }
 
-    next();
+      req.user.role = currentUser.role;
+
+      next();
+    } catch (error) {
+      console.error("[Authorization_Error]: ", error)
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error"
+      });
+    }
   };
 };
 
-// MISSING AUTHORIZATION CHECK: This middleware is meant for Admin actions but is empty
-// or fails to check the role, allowing any authenticated user (e.g. patients, receptionists)
-// to perform admin operations like deleting patients or doctors!
 const authorizeAdminOnlyLegacy = (req, res, next) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Unauthorized.' });
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized',
+    });
   }
-  // TODO: Implement actual admin role verification here
-  // Junior developer commented it out because it was "causing issues during testing"
-  // if (req.user.role !== 'ADMIN') {
-  //   return res.status(403).json({ error: 'Access denied. Admin only.' });
-  // }
+
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Admin only.',
+    });
+  }
+
   next();
 };
 
