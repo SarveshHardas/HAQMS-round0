@@ -6,6 +6,12 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding HAQMS database...');
 
+  await prisma.queueToken.deleteMany();
+  await prisma.appointment.deleteMany();
+  await prisma.patient.deleteMany();
+  await prisma.doctor.deleteMany();
+  await prisma.user.deleteMany();
+
   // ─── Users ────────────────────────────────────────────────────────────────
   const hashedPassword = await bcrypt.hash('password123', 10);
 
@@ -368,6 +374,7 @@ async function main() {
   console.log(`✅ ${appointments.length} appointments seeded`);
 
   // ─── Queue Tokens ──────────────────────────────────────────────────────────
+  const todayQueueDate = today.toISOString().split('T')[0];
   await Promise.all([
     prisma.queueToken.create({
       data: {
@@ -376,6 +383,7 @@ async function main() {
         doctorId: doctor1.id,
         appointmentId: appointments[0].id,
         status: 'CALLING',
+        queueDate: todayQueueDate,
       },
     }),
     prisma.queueToken.create({
@@ -385,6 +393,7 @@ async function main() {
         doctorId: doctor1.id,
         appointmentId: appointments[1].id,
         status: 'WAITING',
+        queueDate: todayQueueDate,
       },
     }),
     prisma.queueToken.create({
@@ -393,6 +402,7 @@ async function main() {
         patientId: patients[6].id,
         doctorId: doctor1.id,
         status: 'WAITING',
+        queueDate: todayQueueDate,
       },
     }),
     prisma.queueToken.create({
@@ -402,6 +412,7 @@ async function main() {
         doctorId: doctor2.id,
         appointmentId: appointments[2].id,
         status: 'CALLING',
+        queueDate: todayQueueDate,
       },
     }),
     prisma.queueToken.create({
@@ -410,6 +421,7 @@ async function main() {
         patientId: patients[8].id,
         doctorId: doctor2.id,
         status: 'WAITING',
+        queueDate: todayQueueDate,
       },
     }),
     prisma.queueToken.create({
@@ -419,6 +431,7 @@ async function main() {
         doctorId: doctor3.id,
         appointmentId: appointments[5].id,
         status: 'WAITING',
+        queueDate: todayQueueDate,
       },
     }),
   ]);
