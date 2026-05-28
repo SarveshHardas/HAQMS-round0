@@ -79,16 +79,16 @@ export const AuthProvider = ({ children }) => {
         throw new Error(data.message || 'Authentication failed');
       }
 
-      // Inconsistent API returns nested success format for login
       const receivedToken = data.data.token;
       const receivedUser = data.data.user;
 
-      // SECURITY ISSUE: Storing sensitive auth credentials directly in LocalStorage!
-      localStorage.setItem('haqms_token', receivedToken);
-      localStorage.setItem('haqms_user', JSON.stringify(receivedUser));
-
       setToken(receivedToken);
       setUser(receivedUser);
+
+      localStorage.setItem('haqms_token', receivedToken);
+      localStorage.setItem('haqms_user', JSON.stringify(receivedUser));
+      
+      setError(null);
 
       router.push('/dashboard');
       return { success: true };

@@ -5,7 +5,7 @@ import { Activity, ShieldAlert, MonitorPlay, Users, CalendarDays, ArrowRight } f
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen justify-between py-12 px-6 lg:px-8">
+    <div className="flex flex-col min-h-screen justify-between py-12 px-6 lg:px-8 bg-slate-50 dark:bg-slate-900">
       <div className="max-w-4xl mx-auto w-full text-center mt-12 sm:mt-20">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 text-sm font-medium mb-6 animate-pulse">
           <Activity className="h-4 w-4" />
@@ -27,8 +27,8 @@ export default function Home() {
         {/* Action Cards */}
         <div className="mt-12 grid gap-8 sm:grid-cols-2 max-w-2xl mx-auto">
           {/* Card 1: Staff Portal */}
-          <Link href="/login" className="group">
-            <div className="glass p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 text-left hover:border-teal-500/50 hover:shadow-teal-500/10 transition-all duration-300 transform hover:-translate-y-1">
+          <Link href="/login" className="group">  
+            <div className="p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 text-left hover:border-teal-500/50 hover:shadow-teal-500/10 transition-all duration-300 transform hover:-translate-y-1">
               <div className="p-3 bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-xl w-fit group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300">
                 <Users className="h-6 w-6" />
               </div>
@@ -44,7 +44,7 @@ export default function Home() {
 
           {/* Card 2: Public Queue Monitor */}
           <Link href="/queue" className="group">
-            <div className="glass p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 text-left hover:border-teal-500/50 hover:shadow-teal-500/10 transition-all duration-300 transform hover:-translate-y-1">
+            <div className="p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 text-left hover:border-teal-500/50 hover:shadow-teal-500/10 transition-all duration-300 transform hover:-translate-y-1">
               <div className="p-3 bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-xl w-fit group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300">
                 <MonitorPlay className="h-6 w-6" />
               </div>
@@ -60,7 +60,7 @@ export default function Home() {
         </div>
 
         {/* Assessment Notice Box */}
-        <div className="mt-16 glass max-w-xl mx-auto p-6 rounded-2xl border border-rose-500/20 shadow-md flex gap-4 text-left">
+        <div className="mt-16 max-w-xl mx-auto p-6 rounded-2xl border border-rose-500/20 shadow-md flex gap-4 text-left">
           <div className="p-2 bg-rose-500/10 text-rose-500 rounded-lg h-fit">
             <ShieldAlert className="h-6 w-6" />
           </div>
