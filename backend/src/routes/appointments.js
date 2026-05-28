@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, authorize } = require('../middleware/auth');
+const { appointmentQuerySchema, appointmentCreateSchema, appointmentUpdateSchema, appointmentIdSchema } = require("../validators/appointment");
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -10,48 +11,78 @@ const prisma = new PrismaClient();
 // PERFORMANCE BUG: Classic N+1 Query Issue!
 // Instead of using Prisma's include, it loops through each appointment and executes
 // individual select statements for Patient and Doctor details.
-router.get('/', authenticate, async (req, res) => {
+router.get('/', authenticate, authorize(['ADMIN', 'DOCTOR', 'RECEPTIONIST']), async (req, res) => {
   try {
-    const { doctorId, status } = req.query;
-
-    const where = {};
-    if (doctorId) where.doctorId = doctorId;
-    if (status) where.status = status;
-
-    // Fetch core appointments
-    const appointments = await prisma.appointment.findMany({
-      where,
-      orderBy: { appointmentDate: 'asc' },
-    });
-
-    const detailedAppointments = [];
-
-    // N+1 triggers here: For every single appointment, we perform two extra queries!
-    for (const app of appointments) {
-      console.log(`[N+1 DB QUERY] Fetching Patient (${app.patientId}) and Doctor (${app.doctorId}) for Appointment ${app.id}`);
-      
-      const patient = await prisma.patient.findUnique({
-        where: { id: app.patientId },
-      });
-
-      const doctor = await prisma.doctor.findUnique({
-        where: { id: app.doctorId },
-      });
-
-      detailedAppointments.push({
-        ...app,
-        patient: patient ? { id: patient.id, name: patient.name, phoneNumber: patient.phoneNumber, age: patient.age, medicalHistory: patient.medicalHistory } : null,
-        doctor: doctor ? { id: doctor.id, name: doctor.name, specialization: doctor.specialization } : null,
+    const validated = appointmentQuerySchema.safeParse(req.query);
+    if (!validated.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid query parameters',
+        errors: validated.error.issues,
       });
     }
 
-    res.json({
+    const { doctorId, status, page, limit } = validated.data;
+    const where = {};
+
+    if (doctorId) where.doctorId = doctorId;
+    if (status) where.status = status;
+
+    const skip = (page - 1) * limit;
+
+    const [appointments, total] = await Promise.all([
+      prisma.appointment.findMany({
+        where,
+        include: {
+          patient: {
+            select: {
+              id: true,
+              name: true,
+              phoneNumber: true,
+              age: true,
+            },
+          },
+          doctor: {
+            select: {
+              id: true,
+              name: true,
+              specialization: true,
+            },
+          },
+        },
+        orderBy: {
+          appointmentDate: 'asc',
+        },
+        skip,
+        take: limit
+      }),
+      prisma.appointment.count({
+        where,
+      }),
+    ]);
+    return res.status(200).json({
       success: true,
-      count: detailedAppointments.length,
-      appointments: detailedAppointments,
+      message: 'Appointments fetched successfully',
+      data: {
+        appointments,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit) || 1,
+          hasNextPage: skip + limit < total,
+          hasPreviousPage: page > 1,
+        },
+      },
     });
+
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve appointments', details: error.message });
+    console.error('[APPOINTMENT_FETCH_ERROR]:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
   }
 });
 
@@ -60,31 +91,66 @@ router.get('/', authenticate, async (req, res) => {
 // DESIGN BUG: Duplicate-prone schema. No unique index blocks duplicate appointment bookings.
 // In this API, we have a half-hearted verification that is easily bypassed or logically flawed,
 // allowing multiple bookings for the exact same date and doctor.
-router.post('/', authenticate, async (req, res) => {
+router.post('/', authenticate, authorize(['ADMIN', 'RECEPTIONIST']), async (req, res) => {
   try {
-    const { patientId, doctorId, appointmentDate, reason } = req.body;
+    const validated = appointmentCreateSchema.safeParse(req.body);
 
-    if (!patientId || !doctorId || !appointmentDate) {
-      return res.status(400).json({ error: 'Patient, Doctor, and Appointment Date are required.' });
+    if (!validated.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request body',
+        errors: validated.error.issues,
+      });
     }
 
+    const { patientId, doctorId, appointmentDate, reason } = validated.data;
     const appDate = new Date(appointmentDate);
 
-    // Flawed duplicate check:
-    // It only checks if the exact millisecond matches. If the candidate books for "2026-05-25 10:00:00"
-    // and another for "2026-05-25 10:00:01", they are treated as unique!
-    // Junior dev logic: "Same time bookings will be blocked."
-    const existingBooking = await prisma.appointment.findFirst({
-      where: {
-        doctorId,
-        appointmentDate: appDate,
-        status: { not: 'CANCELLED' },
-      },
-    });
-
-    if (existingBooking) {
+    if (appDate < new Date()) {
       return res.status(400).json({
-        error: 'Double booking blocked. Doctor already has an appointment at this exact millisecond.',
+        success: false,
+        message: 'Appointment date must be in the future',
+      });
+    }
+
+    const [patient, doctor] = await Promise.all([
+      prisma.patient.findUnique({
+        where: { id: patientId },
+        select: {
+          id: true,
+          name: true,
+        },
+      }),
+      prisma.doctor.findUnique({
+        where: { id: doctorId },
+        select: {
+          id: true,
+          name: true,
+          availableFrom: true,
+          availableTo: true,
+        },
+      }),
+    ]);
+
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found',
+      });
+    }
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: 'Doctor not found',
+      });
+    }
+
+    const appointmentHourMinute = appDate.toTimeString().slice(0, 5);
+    if (appointmentHourMinute < doctor.availableFrom || appointmentHourMinute > doctor.availableTo) {
+      return res.status(400).json({
+        success: false,
+        message: 'Appointment time is outside doctor availability hours',
       });
     }
 
@@ -96,36 +162,136 @@ router.post('/', authenticate, async (req, res) => {
         reason: reason || '',
         status: 'PENDING',
       },
+      include: {
+        patient: {
+          select: {
+            id: true,
+            name: true,
+            phoneNumber: true,
+          },
+        },
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialization: true,
+          },
+        },
+      },
     });
 
-    res.status(201).json({
+    return res.status(201).json({
+      success: true,
       message: 'Appointment booked successfully',
-      appointment,
+      data: {
+        appointment,
+      },
     });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to book appointment', details: error.message });
+    console.error('[APPOINTMENT_CREATE_ERROR]:', error);
+
+    if (error.code === 'P2002') {
+      return res.status(409).json({
+        success: false,
+        message: 'Doctor already has an appointment at this time',
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
   }
 });
 
 // PATCH /api/appointments/:id
 // Update appointment status (COMPLETED, CANCELLED, etc.)
-router.patch('/:id', authenticate, async (req, res) => {
+router.patch('/:id', authenticate, authorize(['ADMIN', 'DOCTOR', 'RECEPTIONIST']), async (req, res) => {
   try {
-    const { status } = req.body;
+    const validatedBody = appointmentUpdateSchema.safeParse(req.body);
 
-    if (!status) {
-      return res.status(400).json({ error: 'Status is required' });
+    const validatedParams = appointmentIdSchema.safeParse(req.params);
+
+    if (!validatedBody.success || !validatedParams.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request data',
+        errors: {
+          bodyErrors: validatedBody.success ? [] : validatedBody.error.issues,
+          paramErrors: validatedParams.success ? [] : validatedParams.error.issues,
+        },
+      });
     }
 
-    const updated = await prisma.appointment.update({
-      where: { id: req.params.id },
+    const { status } = validatedBody.data;
+    const { id } = validatedParams.data;
+
+    const existingAppointment =
+      await prisma.appointment.findUnique({
+        where: { id },
+      });
+
+    if (!existingAppointment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Appointment not found',
+      });
+    }
+
+    const allowedTransitions = {
+      PENDING: ['COMPLETED', 'CANCELLED'],
+      COMPLETED: [],
+      CANCELLED: [],
+    };
+
+    const currentStatus = existingAppointment.status;
+
+    const allowedNextStatuses = allowedTransitions[currentStatus] || [];
+
+    if (!allowedNextStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid appointment transition from ${currentStatus} to ${status}`,
+      });
+    }
+
+    const updatedAppointment = await prisma.appointment.update({
+      where: { id },
       data: { status },
+      include: {
+        patient: {
+          select: {
+            id: true,
+            name: true,
+            phoneNumber: true,
+          },
+        },
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialization: true,
+          },
+        },
+      },
     });
 
-    res.json(updated);
+    return res.status(200).json({
+      success: true,
+      message: 'Appointment updated successfully',
+      data: {
+        appointment: updatedAppointment,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update appointment', details: error.message });
+    console.error('[APPOINTMENT_UPDATE_ERROR]:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
   }
-});
+}
+);
 
 module.exports = router;
