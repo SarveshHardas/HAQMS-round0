@@ -10,7 +10,7 @@ export default function Navbar() {
   if (!user) return null;
 
   return (
-    <nav className="glass sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800 px-6 py-4 shadow-sm backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Branding */}
         <Link href="/" className="flex items-center gap-2 text-teal-600 dark:text-teal-400 font-extrabold text-2xl tracking-tight">

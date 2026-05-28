@@ -75,12 +75,12 @@ export default function QueueMonitor() {
   }, {});
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
       <Navbar />
       
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-8">
         {/* Header Dashboard Banner */}
-        <div className="glass p-6 sm:p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="p-6 sm:p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-xl">
               <Monitor className="h-6 w-6" />
@@ -126,7 +126,7 @@ export default function QueueMonitor() {
             <p className="mt-4 text-sm font-semibold text-slate-400">Loading active token queues...</p>
           </div>
         ) : Object.keys(groupedTokens).length === 0 ? (
-          <div className="glass p-12 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+          <div className="p-12 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
             <Bell className="h-12 w-12 text-slate-400 mx-auto animate-bounce" />
             <h3 className="mt-4 text-lg font-bold text-slate-800 dark:text-slate-100">No Active Tokens</h3>
             <p className="mt-2 text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto">
@@ -139,7 +139,7 @@ export default function QueueMonitor() {
             {Object.entries(groupedTokens).map(([docId, docInfo]) => (
               <div
                 key={docId}
-                className="glass rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-full hover:shadow-teal-500/5 hover:border-teal-500/30 transition-all duration-300"
+                className="rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-full hover:shadow-teal-500/5 hover:border-teal-500/30 transition-all duration-300"
               >
                 {/* Doctor Title Header */}
                 <div className="bg-slate-500/5 p-5 border-b border-slate-200 dark:border-slate-800">

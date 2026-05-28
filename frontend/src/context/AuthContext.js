@@ -132,11 +132,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    router.push('/login');
     localStorage.removeItem('haqms_token');
     localStorage.removeItem('haqms_user');
     setToken(null);
     setUser(null);
-    router.push('/login');
   };
 
   const value = useMemo(() => ({
