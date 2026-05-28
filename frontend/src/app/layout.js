@@ -9,7 +9,7 @@ const inter = Inter({
 
 export const metadata = {
   title: 'HAQMS - Hospital Appointment & Queue Management',
-  description: 'Deliberately imperfect queue and scheduling application for assessment purposes.',
+  description: 'Healthcare appointment scheduling and patient queue management platform.',
 };
 
 export default function RootLayout({ children }) {

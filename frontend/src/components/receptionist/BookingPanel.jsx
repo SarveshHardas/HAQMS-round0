@@ -90,7 +90,7 @@ export default function BookingPanel({
 
           <button
             type="submit"
-            className="glow-btn w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-sm rounded-lg shadow-md transition-colors duration-300 mt-2"
+            className="glow-btn w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white dark:text-slate-950 font-extrabold text-sm rounded-lg shadow-md transition-colors duration-300 mt-2"
           >
             Book Appointment Slot
           </button>

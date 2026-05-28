@@ -111,14 +111,14 @@ export default function PatientRegistry({
           <button
             disabled={patientsPagination.page <= 1}
             onClick={() => fetchPatients(patientsPagination.page - 1)}
-            className="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-teal-500/10 disabled:opacity-50 text-xs font-semibold"
+            className="px-3 py-1 text-gray-500 dark:text-gray-300 rounded border border-slate-200 dark:border-slate-700 hover:bg-teal-500/10 disabled:opacity-50 text-xs font-semibold"
           >
             Prev
           </button>
           <button
             disabled={patientsPagination.page >= patientsPagination.totalPages}
             onClick={() => fetchPatients(patientsPagination.page + 1)}
-            className="px-3 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-teal-500/10 disabled:opacity-50 text-xs font-semibold"
+            className="px-3 py-1 text-gray-500 dark:text-gray-300 rounded border border-slate-200 dark:border-slate-700 hover:bg-teal-500/10 disabled:opacity-50 text-xs font-semibold"
           >
             Next
           </button>
