@@ -2,70 +2,59 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/common/Navbar';
-import { Activity, Bell, Monitor, RefreshCw, AlertCircle } from 'lucide-react';
+import { Bell, Monitor, RefreshCw, AlertCircle } from 'lucide-react';
 
 export default function QueueMonitor() {
   const [tokens, setTokens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // Duplicated config state just to add minor code smell
-  const [refreshCount, setRefreshCount] = useState(0);
 
-  // HARDCODED API BASE URL: Duplicated from AuthContext (code duplication smell)
-  const API_BASE_URL = 'http://localhost:5000/api';
-
-  const fetchQueueData = async () => {
-    try {
-      // Insecure: Fetches queue without checking credentials (it's a public dashboard, which is fine, 
-      // but it uses the hardcoded API domain)
-      const res = await fetch(`${API_BASE_URL}/queue`);
-      if (!res.ok) {
-        throw new Error('Failed to retrieve active token queue.');
-      }
-      const data = await res.json();
-      setTokens(data);
-      setError('');
-    } catch (err) {
-      console.error('Queue poll fetch error:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
-    // Initial fetch
-    fetchQueueData();
+    let mounted = true;
 
-    // MEMORY LEAK BUG:
-    // This setInterval has NO cleanup function (does not return clearInterval).
-    // Every time this page is mounted, a new background polling timer is spun up.
-    // If the candidate navigates between Dashboard and Queue multiple times,
-    // dozens of parallel intervals will poll the database, causing memory bloat,
-    // state update crashes on unmounted components, and heavy server load.
-    const intervalId = setInterval(() => {
-      console.log(`[POLL] Active Queue Poll #${refreshCount + 1} firing...`);
-      fetchQueueData();
-      setRefreshCount((prev) => prev + 1);
-    }, 3000);
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/queue`);
+        const data = await res.json();
 
-    // Junior Developer Note: "Interval created, will run forever to keep dashboard fully synced!"
-    // Missing: return () => clearInterval(intervalId);
-  }, []); // Note that refreshCount dependency is missing too, causing stale closure on log!
+        if (mounted) {
+          setTokens(data.data?.tokens || []);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(err.message);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    const intervalId = setInterval(fetchData, 3000);
+
+    return () => {
+      mounted = false;
+      clearInterval(intervalId);
+    };
+  }, []);
 
   // Group tokens by doctor
-  const groupedTokens = tokens.reduce((groups, token) => {
+  const groupedTokens = (tokens || []).reduce((groups, token) => {
     const docId = token.doctorId;
     if (!groups[docId]) {
       groups[docId] = {
-        doctorName: token.doctor.name,
-        specialization: token.doctor.specialization,
+        doctorName: token.doctor?.name || 'Unknown Doctor',
+        specialization: token.doctor?.specialization || 'Unknown Specialization',
         calling: null,
         waiting: [],
       };
     }
-    
+
     if (token.status === 'CALLING') {
       groups[docId].calling = token;
     } else if (token.status === 'WAITING') {
@@ -77,7 +66,7 @@ export default function QueueMonitor() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
       <Navbar />
-      
+
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-8">
         {/* Header Dashboard Banner */}
         <div className="p-6 sm:p-8 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-800 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -94,15 +83,12 @@ export default function QueueMonitor() {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/15 text-teal-600 dark:text-teal-400 text-xs font-bold uppercase tracking-wide border border-teal-500/20">
               <RefreshCw className="h-3.5 w-3.5 animate-spin" />
               Auto Refreshing
             </span>
-            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-400 text-xs font-mono">
-              Polls: {refreshCount}
-            </div>
           </div>
         </div>
 
@@ -164,7 +150,7 @@ export default function QueueMonitor() {
                           #{docInfo.calling.tokenNumber}
                         </span>
                         <span className="block text-xs font-bold text-slate-400 uppercase tracking-wide mt-2">
-                          Patient: {docInfo.calling.patient.name}
+                          Patient: {docInfo.calling.patient?.name || 'Unknown Patient'}
                         </span>
                       </div>
                     ) : (
@@ -190,7 +176,7 @@ export default function QueueMonitor() {
                           <div
                             key={token.id}
                             className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300"
-                            title={`Patient: ${token.patient.name}`}
+                            title={`Patient: ${token.patient?.name}`}
                           >
                             #{token.tokenNumber}
                           </div>

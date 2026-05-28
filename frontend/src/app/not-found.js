@@ -12,7 +12,7 @@ export default function NotFound() {
           HAQMS
         </Link>
         
-        <div className="glass p-8 rounded-2xl border border-rose-500/20 shadow-xl max-w-sm mx-auto">
+        <div className="p-8 rounded-2xl border border-rose-500/20 shadow-xl max-w-sm mx-auto">
           <div className="p-4 bg-rose-500/10 text-rose-500 rounded-full w-fit mx-auto mb-6">
             <ShieldAlert className="h-10 w-10 animate-bounce" />
           </div>
