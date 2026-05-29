@@ -16,10 +16,10 @@ https://haqms-round0.vercel.app
 https://haqms-round0.onrender.com
 
 **Video Demonstration:**
-[\[Add Video Link\]](https://drive.google.com/file/d/1CK92RdmnBe2-HOe68AjYkMH1NFmbZP5m/view?usp=sharing)
+https://drive.google.com/file/d/1CK92RdmnBe2-HOe68AjYkMH1NFmbZP5m/view?usp=sharing
 
 **Resume:**
-[\[Add Resume Link\]](https://drive.google.com/file/d/1ot08By5TNaHWRWrt2o3DRAp_nP3Ag7Q9/view?usp=sharing)
+https://drive.google.com/file/d/1ot08By5TNaHWRWrt2o3DRAp_nP3Ag7Q9/view?usp=sharing
 
 ---
 
