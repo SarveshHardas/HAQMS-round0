@@ -432,24 +432,24 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-8">
 
         {/* Navigation Tabs based on Role */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 mb-8 overflow-x-auto gap-4">
+        <div className="flex border-b border-border mb-8 overflow-x-auto gap-5">
           {user?.role === 'ADMIN' && (
             <>
               <button
                 onClick={() => setActiveTab('reports')}
-                className={`py-3.5 px-1 border-b-2 font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'reports' ? 'border-teal-500 text-teal-600 dark:text-teal-400' : 'border-transparent text-slate-400'}`}
+                className={`py-3.5 px-1 border-b-2 font-semibold text-sm transition-all whitespace-nowrap cursor-pointer ${activeTab === 'reports' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
                 System Audit Reports
               </button>
               <button
                 onClick={() => setActiveTab('physicians')}
-                className={`py-3.5 px-1 border-b-2 font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'physicians' ? 'border-teal-500 text-teal-600 dark:text-teal-400' : 'border-transparent text-slate-400'}`}
+                className={`py-3.5 px-1 border-b-2 font-semibold text-sm transition-all whitespace-nowrap cursor-pointer ${activeTab === 'physicians' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
                 Physician Registry
               </button>
@@ -460,13 +460,13 @@ export default function Dashboard() {
             <>
               <button
                 onClick={() => setActiveTab('patients')}
-                className={`py-3.5 px-1 border-b-2 font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'patients' ? 'border-teal-500 text-teal-600 dark:text-teal-400' : 'border-transparent text-slate-400'}`}
+                className={`py-3.5 px-1 border-b-2 font-semibold text-sm transition-all whitespace-nowrap cursor-pointer ${activeTab === 'patients' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
                 Patient Registry Directory
               </button>
               <button
                 onClick={() => setActiveTab('book')}
-                className={`py-3.5 px-1 border-b-2 font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'book' ? 'border-teal-500 text-teal-600 dark:text-teal-400' : 'border-transparent text-slate-400'}`}
+                className={`py-3.5 px-1 border-b-2 font-semibold text-sm transition-all whitespace-nowrap cursor-pointer ${activeTab === 'book' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
                 Scheduling / Check-in Portal
               </button>
@@ -477,13 +477,13 @@ export default function Dashboard() {
             <>
               <button
                 onClick={() => setActiveTab('appointments')}
-                className={`py-3.5 px-1 border-b-2 font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'appointments' ? 'border-teal-500 text-teal-600 dark:text-teal-400' : 'border-transparent text-slate-400'}`}
+                className={`py-3.5 px-1 border-b-2 font-semibold text-sm transition-all whitespace-nowrap cursor-pointer ${activeTab === 'appointments' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
                 My Scheduled Bookings
               </button>
               <button
                 onClick={() => setActiveTab('queue')}
-                className={`py-3.5 px-1 border-b-2 font-bold text-sm transition-all whitespace-nowrap ${activeTab === 'queue' ? 'border-teal-500 text-teal-600 dark:text-teal-400' : 'border-transparent text-slate-400'}`}
+                className={`py-3.5 px-1 border-b-2 font-semibold text-sm transition-all whitespace-nowrap cursor-pointer ${activeTab === 'queue' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
               >
                 Active Calling Queue
               </button>
@@ -493,18 +493,18 @@ export default function Dashboard() {
 
         {/* Global Notifications Panel */}
         {checkinMessage && (
-          <div className="p-4 mb-6 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-between text-sm">
+          <div className="p-4 mb-6 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-between text-sm">
             <span>{checkinMessage}</span>
-            <button onClick={() => setCheckinMessage('')} className="font-bold underline text-xs">Dismiss</button>
+            <button onClick={() => setCheckinMessage('')} className="font-semibold underline text-xs cursor-pointer">Dismiss</button>
           </div>
         )}
 
         {/* Role-based Dashboard Rendering */}
         {user?.role === 'ADMIN' && (
-          <>
+          <div className="space-y-8">
             <AdminDashboard {...sharedProps} />
             <ReceptionistDashboard {...sharedProps} />
-          </>
+          </div>
         )}
 
         {user?.role === 'RECEPTIONIST' && (
@@ -518,3 +518,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

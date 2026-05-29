@@ -14,18 +14,23 @@ export default function PatientRegistry({
   doctorsList,
   setSelectedPatientForCheckin,
   setIsCheckinModalOpen,
+  // Destructure added modal props
+  isCheckinModalOpen,
+  selectedPatientForCheckin,
+  selectedDoctorForCheckin,
+  setSelectedDoctorForCheckin,
 }) {
   return (
-    <div className="p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800">
-      <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-4">
-        <ClipboardList className="h-5 w-5 text-teal-600" />
+    <div className="p-6 rounded-xl border border-border bg-card shadow-xs text-foreground">
+      <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
+        <ClipboardList className="h-4.5 w-4.5 text-primary" />
         Patient Lookup Directory
       </h3>
 
       {/* Filters */}
       <div className="flex gap-4 mb-6">
-        <div className="relative flex-1 rounded-lg shadow-sm">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+        <div className="relative flex-1 rounded-lg shadow-xs">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
             <Search className="h-4 w-4" />
           </div>
           <input
@@ -33,14 +38,14 @@ export default function PatientRegistry({
             value={patientSearch}
             onChange={(e) => setPatientSearch(e.target.value)}
             placeholder="Search by name, phone or email..."
-            className="block w-full pl-9 pr-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
+            className="block w-full pl-9 pr-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-normal"
           />
         </div>
 
         <select
           value={patientGender}
           onChange={(e) => setPatientGender(e.target.value)}
-          className="px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
+          className="px-3 py-2 border border-border bg-background rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-normal cursor-pointer"
         >
           <option value="All">All Genders</option>
           <option value="Male">Male</option>
@@ -51,45 +56,45 @@ export default function PatientRegistry({
 
       {/* Table listing */}
       {patientsLoading ? (
-        <p className="text-center py-6 text-slate-400 animate-pulse text-sm">Synchronizing table data...</p>
+        <p className="text-center py-6 text-muted-foreground animate-pulse text-xs font-semibold">Synchronizing table data...</p>
       ) : patients.length === 0 ? (
-        <p className="text-center py-6 text-slate-400 text-sm">No registered patients match this filter.</p>
+        <p className="text-center py-6 text-muted-foreground text-xs font-semibold">No registered patients match this filter.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-sm text-left">
+          <table className="min-w-full divide-y divide-border text-sm text-left">
             <thead>
-              <tr className="text-slate-400 uppercase tracking-widest text-xxs font-bold border-b border-slate-200 dark:border-slate-800">
+              <tr className="text-muted-foreground uppercase tracking-wider text-[10px] font-bold border-b border-border">
                 <th className="pb-3">Name</th>
                 <th className="pb-3">Contact</th>
                 <th className="pb-3">Age/Sex</th>
                 <th className="pb-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-border">
               {patients.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-500/5 transition-colors">
-                  <td className="py-3.5 font-bold text-slate-800 dark:text-slate-200">
+                <tr key={p.id} className="hover:bg-secondary/30 transition-colors">
+                  <td className="py-3 font-semibold text-foreground">
                     {p.name}
-                    {p.email && <span className="block text-xxs text-slate-400 font-normal mt-0.5">{p.email}</span>}
+                    {p.email && <span className="block text-xxs text-muted-foreground font-normal mt-0.5">{p.email}</span>}
                   </td>
-                  <td className="py-3.5 text-slate-500 dark:text-slate-400 font-medium">{p.phoneNumber}</td>
-                  <td className="py-3.5 text-slate-500 dark:text-slate-400">
+                  <td className="py-3 text-muted-foreground font-medium text-xs">{p.phoneNumber}</td>
+                  <td className="py-3 text-muted-foreground text-xs">
                     {p.age} yrs / <span className="capitalize">{p.gender}</span>
                   </td>
-                  <td className="py-3.5 text-right space-x-2">
+                  <td className="py-3 text-right space-x-2">
                     <button
                       onClick={() => {
                         setSelectedPatientForCheckin(p);
                         setIsCheckinModalOpen(true);
                       }}
-                      className="text-xxs px-2.5 py-1 rounded bg-teal-500/10 text-teal-600 dark:text-teal-400 font-bold hover:bg-teal-500 hover:text-white transition-colors"
+                      className="text-xxs px-2.5 py-1 rounded bg-primary/10 text-primary border border-primary/20 font-bold hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
                     >
                       Check In
                     </button>
 
                     <button
                       onClick={() => handleDeletePatient(p.id)}
-                      className="text-xxs p-1 rounded bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-colors"
+                      className="text-xxs p-1.5 rounded bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer"
                       title="Delete patient record"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -103,27 +108,87 @@ export default function PatientRegistry({
       )}
 
       {/* Pagination control */}
-      <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span className="text-xs text-slate-400 font-medium">
+      <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
+        <span className="text-xs text-muted-foreground font-medium">
           Page {patientsPagination.page} of {patientsPagination.totalPages}
         </span>
         <div className="flex gap-2">
           <button
             disabled={patientsPagination.page <= 1}
             onClick={() => fetchPatients(patientsPagination.page - 1)}
-            className="px-3 py-1 text-gray-500 dark:text-gray-300 rounded border border-slate-200 dark:border-slate-700 hover:bg-teal-500/10 disabled:opacity-50 text-xs font-semibold"
+            className="px-3 py-1 bg-card text-foreground rounded border border-border hover:bg-secondary disabled:opacity-40 text-xs font-semibold transition-colors cursor-pointer"
           >
             Prev
           </button>
           <button
             disabled={patientsPagination.page >= patientsPagination.totalPages}
             onClick={() => fetchPatients(patientsPagination.page + 1)}
-            className="px-3 py-1 text-gray-500 dark:text-gray-300 rounded border border-slate-200 dark:border-slate-700 hover:bg-teal-500/10 disabled:opacity-50 text-xs font-semibold"
+            className="px-3 py-1 bg-card text-foreground rounded border border-border hover:bg-secondary disabled:opacity-40 text-xs font-semibold transition-colors cursor-pointer"
           >
             Next
           </button>
         </div>
       </div>
+
+      {/* Standard Queue Check-in Modal Overlay */}
+      {isCheckinModalOpen && selectedPatientForCheckin && (
+        <div className="fixed inset-0 bg-background/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border shadow-md rounded-xl max-w-sm w-full p-6 space-y-4 text-foreground animate-in fade-in zoom-in-95 duration-150">
+            <div>
+              <h3 className="text-base font-bold text-foreground">Patient Check-in</h3>
+              <p className="text-xs text-muted-foreground mt-1 font-semibold">
+                Generate an immediate active token for {selectedPatientForCheckin.name}.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-foreground/80 mb-1.5">Assign Practitioner*</label>
+                <select
+                  value={selectedDoctorForCheckin}
+                  onChange={(e) => setSelectedDoctorForCheckin(e.target.value)}
+                  className="block w-full px-3 py-2 border border-border bg-background rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-normal cursor-pointer"
+                >
+                  <option value="">-- Choose Practitioner --</option>
+                  {doctorsList.map(d => (
+                    <option key={d.id} value={d.id}>{d.name} ({d.specialization})</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 text-xs">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCheckinModalOpen(false);
+                  setSelectedPatientForCheckin(null);
+                  setSelectedDoctorForCheckin('');
+                }}
+                className="px-3 py-2 bg-secondary border border-border hover:bg-secondary/80 text-foreground font-semibold rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!selectedDoctorForCheckin}
+                onClick={() => {
+                  handleQueueCheckin(
+                    selectedPatientForCheckin.id,
+                    selectedDoctorForCheckin
+                  );
+                  setIsCheckinModalOpen(false);
+                  setSelectedPatientForCheckin(null);
+                  setSelectedDoctorForCheckin('');
+                }}
+                className="px-3.5 py-2 bg-primary text-primary-foreground hover:bg-primary/95 font-semibold rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                Confirm Check-in
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

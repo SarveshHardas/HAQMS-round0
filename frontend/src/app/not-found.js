@@ -3,32 +3,32 @@ import { ShieldAlert, ArrowLeft, Activity } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col min-h-screen justify-center items-center py-12 px-6 lg:px-8 text-center">
+    <div className="flex flex-col min-h-screen justify-center items-center py-12 px-6 lg:px-8 text-center bg-background text-foreground">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="inline-flex items-center gap-2 text-teal-600 dark:text-teal-400 font-extrabold text-3xl mb-8">
-          <Activity className="h-8 w-8 animate-pulse" />
+        <Link href="/" className="inline-flex items-center gap-1.5 text-primary font-bold text-2xl mb-8">
+          <Activity className="h-6 w-6" />
           HAQMS
         </Link>
 
-        <div className="p-8 rounded-2xl border border-rose-500/20 shadow-xl max-w-sm mx-auto">
-          <div className="p-4 bg-rose-500/10 text-rose-500 rounded-full w-fit mx-auto mb-6">
-            <ShieldAlert className="h-10 w-10 animate-bounce" />
+        <div className="p-8 rounded-xl border border-border bg-card shadow-xs max-w-sm mx-auto">
+          <div className="p-3.5 bg-destructive/10 text-destructive rounded-full w-fit mx-auto mb-5">
+            <ShieldAlert className="h-8 w-8" />
           </div>
 
-          <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100">404</h2>
-          <h3 className="mt-2 text-xl font-bold text-slate-800 dark:text-slate-100">
+          <h2 className="text-4xl font-extrabold text-foreground">404</h2>
+          <h3 className="mt-2 text-lg font-bold text-foreground">
             Page Not Found
           </h3>
 
-          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
             The page you are looking for does not exist or may have been moved.
             Please return to the dashboard and continue using the application.
           </p>
 
-          <div className="mt-8">
+          <div className="mt-6">
             <Link
               href="/dashboard"
-              className="glow-btn inline-flex items-center justify-center gap-2 py-2.5 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300 w-full"
+              className="inline-flex w-full items-center justify-center gap-1.5 py-2.5 px-4 bg-primary text-primary-foreground hover:bg-primary/95 text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Dashboard
@@ -39,3 +39,4 @@ export default function NotFound() {
     </div>
   );
 }
+

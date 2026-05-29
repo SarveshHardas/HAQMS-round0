@@ -58,37 +58,37 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen justify-center items-center py-12 px-6 lg:px-8 bg-slate-50 dark:bg-slate-900">
+    <div className="flex flex-col min-h-screen justify-center items-center py-12 px-6 lg:px-8 bg-background text-foreground">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link href="/" className="inline-flex items-center gap-2 text-teal-600 dark:text-teal-400 font-extrabold text-3xl">
-          <Activity className="h-8 w-8 animate-pulse" />
+        <Link href="/" className="inline-flex items-center gap-1.5 text-primary font-bold text-2xl">
+          <Activity className="h-6 w-6" />
           HAQMS
         </Link>
-        <h2 className="mt-6 text-3xl font-extrabold text-slate-800 dark:text-slate-100">
+        <h2 className="mt-5 text-2xl font-extrabold text-foreground">
           Sign in to your account
         </h2>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-2 text-xs text-muted-foreground">
           Or use one of the pre-seeded credentials in the README
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="py-8 px-6 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-800">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="py-8 px-6 bg-card shadow-xs rounded-xl border border-border">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Validation Display */}
             {(validationError || authError) && (
-              <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-lg">
+              <div className="p-3 text-xs bg-destructive/10 border border-destructive/20 text-destructive rounded-lg font-medium">
                 {validationError || authError}
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <label htmlFor="email" className="block text-xs font-semibold text-foreground/80 mb-1.5">
                 Email Address
               </label>
-              <div className="mt-1 relative rounded-lg shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <User className="h-5 w-5" />
+              <div className="relative rounded-lg shadow-xs">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
+                  <User className="h-4 w-4" />
                 </div>
                 <input
                   id="email"
@@ -97,7 +97,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
-                  className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all text-sm"
+                  className="block w-full pl-9 pr-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
                   placeholder="admin@haqms.com"
                   spellCheck={false}
                   required
@@ -106,12 +106,12 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <label htmlFor="password" className="block text-xs font-semibold text-foreground/80 mb-1.5">
                 Password
               </label>
-              <div className="mt-1 relative rounded-lg shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="h-5 w-5" />
+              <div className="relative rounded-lg shadow-xs">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
+                  <Lock className="h-4 w-4" />
                 </div>
                 <input
                   id="password"
@@ -120,7 +120,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
-                  className="block w-full pl-10 pr-10 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all text-sm"
+                  className="block w-full pl-9 pr-10 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
                   placeholder="••••••••"
                   required
                 />
@@ -133,18 +133,18 @@ export default function Login() {
                   }
                   aria-pressed={showPassword}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            <div>
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={loading}
-                className="glow-btn w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300 disabled:opacity-50"
+                className="w-full flex justify-center py-2 px-4 bg-primary text-primary-foreground font-semibold text-sm rounded-lg shadow-xs hover:bg-primary/95 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
@@ -152,31 +152,30 @@ export default function Login() {
           </form>
 
           {/* Quick seeded login panel */}
-
           {process.env.NEXT_PUBLIC_SHOW_DEMO_CREDENTIALS === 'true' && (
-            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Seeded Demo Credentials</h4>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="mt-6 pt-5 border-t border-border">
+              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2.5">Seeded Demo Credentials</h4>
+              <div className="grid grid-cols-1 gap-2 text-xxs">
                 <button
                   type="button"
                   onClick={() => { setEmail('admin@haqms.com'); setPassword('password123'); }}
-                  className="text-center p-2 rounded bg-slate-100 dark:bg-slate-800 hover:bg-teal-500/10 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-slate-600 dark:text-slate-300"
+                  className="text-left p-2 rounded-lg bg-secondary text-secondary-foreground border border-border/80 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
                 >
-                  <strong>Admin:</strong> admin@haqms.com
+                  <span className="font-semibold">Admin:</span> admin@haqms.com (password123)
                 </button>
                 <button
                   type="button"
                   onClick={() => { setEmail('reception1@haqms.com'); setPassword('password123'); }}
-                  className="text-center p-2 rounded bg-slate-100 dark:bg-slate-800 hover:bg-teal-500/10 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-slate-600 dark:text-slate-300"
+                  className="text-left p-2 rounded-lg bg-secondary text-secondary-foreground border border-border/80 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
                 >
-                  <strong>Receptionist:</strong> reception1@haqms.com
+                  <span className="font-semibold">Receptionist:</span> reception1@haqms.com (password123)
                 </button>
                 <button
                   type="button"
                   onClick={() => { setEmail('doctor1@haqms.com'); setPassword('password123'); }}
-                  className="text-center p-2 rounded bg-slate-100 dark:bg-slate-800 hover:bg-teal-500/10 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-slate-600 dark:text-slate-300"
+                  className="text-left p-2 rounded-lg bg-secondary text-secondary-foreground border border-border/80 hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer"
                 >
-                  <strong>Doctor:</strong> doctor1@haqms.com
+                  <span className="font-semibold">Doctor:</span> doctor1@haqms.com (password123)
                 </button>
               </div>
             </div>
@@ -186,3 +185,4 @@ export default function Login() {
     </div>
   );
 }
+

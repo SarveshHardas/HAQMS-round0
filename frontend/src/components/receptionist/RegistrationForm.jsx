@@ -17,21 +17,21 @@ export default function RegistrationForm({
   handleRegisterPatient,
 }) {
   return (
-    <div className="p-6 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 h-fit">
-      <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-4">
-        <UserPlus className="h-5 w-5 text-teal-600" />
-        New Registration
+    <div className="p-6 rounded-xl border border-border bg-card shadow-xs h-fit text-foreground">
+      <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
+        <UserPlus className="h-4 w-4 text-primary shrink-0" />
+        New Patient Registration
       </h3>
 
       {regMessage && (
-        <div className={`p-3 text-sm rounded-lg mb-4 ${regMessage.startsWith('Success') ? 'bg-teal-500/15 text-teal-600 dark:text-teal-400 border border-teal-500/20' : 'bg-rose-500/15 text-rose-500 border border-rose-500/20'}`}>
+        <div className={`p-3 text-xs rounded-lg mb-4 font-medium ${regMessage.toLowerCase().includes('success') ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-destructive/10 text-destructive border border-destructive/20'}`}>
           {regMessage}
         </div>
       )}
 
-      <form onSubmit={handleRegisterPatient} className="space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
+      <form onSubmit={handleRegisterPatient} className="space-y-4 text-xs font-semibold text-foreground/80">
         <div>
-          <label className="block mb-1">Patient Full Name*</label>
+          <label className="block mb-1.5 text-xs font-semibold">Patient Full Name*</label>
           <input
             type="text"
             required
@@ -39,13 +39,13 @@ export default function RegistrationForm({
             value={regName}
             onChange={(e) => setRegName(e.target.value)}
             placeholder="Bruce Wayne"
-            className="block w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
+            className="block w-full px-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-normal"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block mb-1">Age (Years)*</label>
+            <label className="block mb-1.5 text-xs font-semibold">Age (Years)*</label>
             <input
               type="number"
               required
@@ -54,15 +54,15 @@ export default function RegistrationForm({
               value={regAge}
               onChange={(e) => setRegAge(e.target.value)}
               placeholder="35"
-              className="block w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
+              className="block w-full px-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-normal"
             />
           </div>
           <div>
-            <label className="block mb-1">Gender*</label>
+            <label className="block mb-1.5 text-xs font-semibold">Gender*</label>
             <select
               value={regGender}
               onChange={(e) => setRegGender(e.target.value)}
-              className="block w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
+              className="block w-full px-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-normal cursor-pointer"
             >
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -72,7 +72,7 @@ export default function RegistrationForm({
         </div>
 
         <div>
-          <label className="block mb-1">Contact Phone*</label>
+          <label className="block mb-1.5 text-xs font-semibold">Contact Phone*</label>
           <input
             type="number"
             required
@@ -80,40 +80,41 @@ export default function RegistrationForm({
             maxLength={15}
             onChange={(e) => setRegPhone(e.target.value)}
             placeholder="+1 555 0199"
-            className="block w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
+            className="block w-full px-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-normal"
           />
         </div>
 
         <div>
-          <label className="block mb-1">Email Address</label>
+          <label className="block mb-1.5 text-xs font-semibold">Email Address</label>
           <input
             type="email"
             value={regEmail}
             onChange={(e) => setRegEmail(e.target.value)}
             placeholder="bruce@wayne.com"
-            className="block w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
+            className="block w-full px-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-normal"
           />
         </div>
 
         <div>
-          <label className="block mb-1">Medical Anamnesis / History (Can be left blank)</label>
+          <label className="block mb-1.5 text-xs font-semibold">Medical Anamnesis / History</label>
           <textarea
             value={regHistory}
             onChange={(e) => setRegHistory(e.target.value)}
             placeholder="E.g. cardiovascular risks, asthma..."
             rows="3"
             maxLength={1000}
-            className="block w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 text-sm focus:outline-none"
+            className="block w-full px-3 py-2 border border-border bg-background rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-normal"
           ></textarea>
         </div>
 
         <button
           type="submit"
-          className="glow-btn w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-sm rounded-lg shadow-md transition-colors duration-300 mt-2"
+          className="w-full py-2 bg-primary text-primary-foreground hover:bg-primary/95 font-semibold text-xs rounded-lg shadow-xs transition-colors cursor-pointer"
         >
           Register Patient Record
         </button>
       </form>
     </div>
+
   );
 }
